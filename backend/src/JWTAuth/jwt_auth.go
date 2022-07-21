@@ -45,6 +45,16 @@ func GenerateJWT(id string) (string, error) {
 	return signedToken, err
 }
 
-func ValidateJWT(token string) (string, error) {
-	return "", nil
+// get user ID from JWT
+func ValidateJWT(tokenString string) (string, error) {
+	token, err := jwt.ParseWithClaims(tokenString, &userClaims{}, func(token *jwt.Token) (interface{}, error) {
+		return []byte(signKey), nil
+		})
+
+	if claims, ok := token.Claims.(*userClaims); ok && token.Valid {
+		// valid token
+		return claims.Id, nil
+	}
+
+	return "", err
 }
