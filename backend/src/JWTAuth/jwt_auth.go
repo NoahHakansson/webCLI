@@ -1,4 +1,4 @@
-package src
+package jwtauth
 
 import (
 	"github.com/golang-jwt/jwt/v4"
@@ -10,6 +10,8 @@ type userClaims struct {
 	Id string `json:"id"`
 	jwt.RegisteredClaims
 }
+
+signKey := os.Getenv("SECRET_SIGN_KEY")
 
 func GenerateJWT(id string) (string, error) {
 	claims := &userClaims{
