@@ -11,7 +11,23 @@ type userClaims struct {
 	jwt.RegisteredClaims
 }
 
-signKey := os.Getenv("SECRET_SIGN_KEY")
+func getEnv() string {
+	var secret string
+	val, ok := os.LookupEnv("SECRET_SIGN_KEY")
+	if !ok {
+		// env not set
+		secret = "supersecretkey"
+	} else {
+		// env is set
+		secret = val
+	}
+
+	return secret
+}
+
+var signKey = getEnv()
+// var signKey = []byte("supersecretkey")
+
 
 func GenerateJWT(id string) (string, error) {
 	claims := &userClaims{
@@ -24,7 +40,11 @@ func GenerateJWT(id string) (string, error) {
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	signedToken, err := token.SignedString(signKey)
+	signedToken, err := token.SignedString([]byte(signKey))
 
 	return signedToken, err
+}
+
+func ValidateJWT(token string) (string, error) {
+	return "", nil
 }
