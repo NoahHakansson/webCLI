@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/NoahHakansson/webCLI/backend/src/Routes"
+  "github.com/NoahHakansson/webCLI/backend/src/Routes"
 )
 
 func main() {

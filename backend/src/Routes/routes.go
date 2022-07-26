@@ -46,8 +46,8 @@ func authRequired(c *gin.Context) {
 		fmt.Println("user NOT logged in")
 		fmt.Println(err)
 		cookie = "NotSet"
+		c.AbortWithStatusJSON(401, gin.H{"error": "unauthorized"})
 		return
-
 	}
 
 	fmt.Println("Cookie:", cookie)
@@ -56,6 +56,7 @@ func authRequired(c *gin.Context) {
 
 	if err != nil {
 		fmt.Println(err)
+		c.AbortWithStatusJSON(401, gin.H{"error": "unauthorized"})
 		return
 	}
 
@@ -102,6 +103,7 @@ func login(c *gin.Context) {
 		return
 	}
 
+	// create a cookie that's valid for 2 hours
 	c.SetCookie("web_cli", token, 60*60*2, "/", "localhost", true, true)
 
 	fmt.Println("Token:", token)
