@@ -27,18 +27,18 @@ func SetupRoutes() {
 	r.POST("/api/login", login)
 	// r.GET("/api/login", login)
 	// auth protected routes
-	auth := r.Group("/", authRequired)
-	auth.GET("/api/protected-hello", hello)
+	auth := r.Group("/", authMiddleware)
+	auth.GET("/api/auth-hello", hello)
 
 	r.Run(":5000")
 }
 
 func hello(c *gin.Context) {
-	msg := "Hi there!"
+	msg := gin.H{"message": "Hi there!"}
 	c.IndentedJSON(http.StatusOK, msg)
 }
 
-func authRequired(c *gin.Context) {
+func authMiddleware(c *gin.Context) {
 	// check cookie for valid JWT to see if user is already logged in
 	cookie, err := c.Cookie("web_cli")
 
