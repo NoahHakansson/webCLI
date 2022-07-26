@@ -25,7 +25,6 @@ func SetupRoutes() {
 	// routes
 	r.GET("/api/hello", hello)
 	r.POST("/api/login", login)
-	// r.GET("/api/login", login)
 	// auth protected routes
 	auth := r.Group("/", authMiddleware)
 	auth.GET("/api/auth-hello", hello)
