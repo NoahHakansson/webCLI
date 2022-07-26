@@ -1,0 +1,35 @@
+version: '3'
+
+services:
+  db:
+    image: postgres
+    volumes:
+      - ./data/db:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=web_cli
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+  # frontend:
+  #   image: node:16
+  #   volumes:
+  #     - ./frontend:/app
+  #   ports:
+  #     - "3000:80"
+  #   command: bash -c "cd app && npm install && npm run build"
+  # backend:
+  #   image: go-gin-backend
+  #   build:
+  #     context: backend
+  #   restart: always
+  #   ports:
+  #     - "5000:5000"
+  #   environment:
+  #     - GIN_MODE=debug
+  #     # - GIN_MODE=release
+  #     - POSTGRES_NAME=web_cli
+  #     - POSTGRES_USER=postgres
+  #     - POSTGRES_PASSWORD=postgres
+  #   depends_on:
+  #     - db
+
+
