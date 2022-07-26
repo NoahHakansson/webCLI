@@ -8,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/NoahHakansson/webCLI/backend/src/JWTAuth"
+	"github.com/NoahHakansson/webCLI/backend/src/DB"
 )
 
 var test_user string = "test"
