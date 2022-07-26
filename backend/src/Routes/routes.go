@@ -85,7 +85,7 @@ func login(c *gin.Context) {
 	}
 
 	// check login information
-	fmt.Printf("User is %#v\n", user)
+	fmt.Printf("User: %#v\n", user)
 	userId, err := checkUserLogin(user.Username, user.Password)
 
 	if err != nil {
