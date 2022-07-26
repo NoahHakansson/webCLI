@@ -1,9 +1,11 @@
 package jwtauth
 
 import (
-	"github.com/golang-jwt/jwt/v4"
+	"fmt"
 	"os"
 	"time"
+
+	"github.com/golang-jwt/jwt/v4"
 )
 
 type userClaims struct {
@@ -26,8 +28,8 @@ func getEnv() string {
 }
 
 var signKey = getEnv()
-// var signKey = []byte("supersecretkey")
 
+// var signKey = []byte("supersecretkey")
 
 func GenerateJWT(id string) (string, error) {
 	claims := &userClaims{
@@ -42,14 +44,24 @@ func GenerateJWT(id string) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	signedToken, err := token.SignedString([]byte(signKey))
 
-	return signedToken, err
+	if err != nil {
+		fmt.Println(err)
+		return "", err
+	}
+
+	return signedToken, nil
 }
 
 // get user ID from JWT
 func ValidateJWT(tokenString string) (string, error) {
 	token, err := jwt.ParseWithClaims(tokenString, &userClaims{}, func(token *jwt.Token) (interface{}, error) {
 		return []byte(signKey), nil
-		})
+	})
+
+	if err != nil {
+		fmt.Println(err)
+		return "", err
+	}
 
 	if claims, ok := token.Claims.(*userClaims); ok && token.Valid {
 		// valid token
