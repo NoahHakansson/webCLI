@@ -9,6 +9,8 @@ services:
       - POSTGRES_DB=web_cli
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
+    ports:
+      - "5432:5432"
   # frontend:
   #   image: node:16
   #   volumes:
