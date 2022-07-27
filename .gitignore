@@ -32,6 +32,8 @@ dist
 dist-ssr
 *.local
 .env
+data
+pgadmin
 
 # Editor directories and files
 /Session.vim

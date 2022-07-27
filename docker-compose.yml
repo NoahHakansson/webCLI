@@ -11,6 +11,16 @@ services:
       - POSTGRES_PASSWORD=postgres
     ports:
       - "5432:5432"
+  pgadmin4:
+    image: dpage/pgadmin4
+    volumes:
+      - ./pgadmin/pg:/var/lib/pgadmin
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=user@domain.com
+      - PGADMIN_DEFAULT_PASSWORD=SuperSecret
+    ports:
+      - "5050:80"
+
   # frontend:
   #   image: node:16
   #   volumes:

@@ -20,6 +20,7 @@ type UserCreds struct {
 }
 
 func SetupRoutes() {
+	db.ConnDB()
 	r := gin.Default()
 	r.SetTrustedProxies([]string{"127.0.0.1"})
 
