@@ -9,7 +9,8 @@ import (
 
 type User struct {
 	gorm.Model
-	Name string
+	Username string
+	Password string
 }
 
 func ConnDB() {
