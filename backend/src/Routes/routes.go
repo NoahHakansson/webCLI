@@ -1,14 +1,13 @@
 package routes
 
 import (
-	"errors"
 	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/NoahHakansson/webCLI/backend/src/JWTAuth"
 	"github.com/NoahHakansson/webCLI/backend/src/DB"
+	"github.com/NoahHakansson/webCLI/backend/src/JWTAuth"
 )
 
 var test_user string = "test"
@@ -20,7 +19,7 @@ type UserCreds struct {
 }
 
 func SetupRoutes() {
-	db.ConnDB()
+	db.SetupDatabase()
 	r := gin.Default()
 	r.SetTrustedProxies([]string{"127.0.0.1"})
 
@@ -66,15 +65,6 @@ func authMiddleware(c *gin.Context) {
 	// c.JSON(200, gin.H{"message": "User already logged in"})
 }
 
-func checkUserLogin(user string, pass string) (id string, err error) {
-	// TODO: integrate with future database, instead of hardcoded data
-	id = "test_ID"
-	if user == test_user && pass == test_pass {
-		return id, nil
-	}
-	return "", errors.New("checkUserLogin: User credentials are not valid")
-}
-
 func login(c *gin.Context) {
 	var user UserCreds
 
@@ -85,13 +75,13 @@ func login(c *gin.Context) {
 		return
 	}
 
-	// check login information
+	// Try to authenticate user
 	fmt.Printf("User: %#v\n", user)
-	userId, err := checkUserLogin(user.Username, user.Password)
+	userId, err := db.AuthUser(user.Username, user.Password)
 
 	if err != nil {
 		fmt.Println(err)
-		c.JSON(401, gin.H{"error": err.Error()})
+		c.JSON(401, gin.H{"error": "Failed to authenticate user, username or password is wrong."})
 		return
 	}
 
@@ -104,7 +94,7 @@ func login(c *gin.Context) {
 		return
 	}
 
-	// create a cookie that's valid for 2 hours
+	// create a cookie that's valid for 2 hours to match the JWT 2 hour expiration time
 	c.SetCookie("web_cli", token, 60*60*2, "/", "localhost", true, true)
 
 	fmt.Println("Token:", token)

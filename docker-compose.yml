@@ -12,7 +12,7 @@ services:
     ports:
       - "5432:5432"
   pgadmin4:
-    image: dpage/pgadmin4
+    image: dpage/pgadmin4:latest
     volumes:
       - ./pgadmin/pg:/var/lib/pgadmin
     environment:

@@ -35,7 +35,7 @@ func GenerateJWT(id string) (string, error) {
 	claims := &userClaims{
 		Id: id,
 		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 24)),
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 2)),
 			Issuer:    "webCLI",
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
 		},
