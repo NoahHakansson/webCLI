@@ -72,7 +72,26 @@ func createCommand(c *gin.Context) {
 }
 
 func createUser(c *gin.Context) {
+	var user UserCreds
 
+	// bind form data and return error if it fails
+	if err := c.ShouldBind(&user); err != nil {
+		fmt.Println(err)
+		c.JSON(400, gin.H{"error": "Missing user credentials"})
+		return
+	}
+
+	// Create user
+	fmt.Printf("User: %#v\n", user)
+	err := db.CreateUser(user.Username, user.Password)
+
+	if err != nil {
+		fmt.Println(err)
+		c.JSON(401, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(200, gin.H{"message": "Success"})
 }
 
 func login(c *gin.Context) {

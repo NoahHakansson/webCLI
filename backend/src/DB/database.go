@@ -30,12 +30,11 @@ func SetupDatabase() {
 	}
 
 	db.AutoMigrate(&User{})
-	userId, err := CreateUser("test", "pass")
+	err := CreateUser("admin", "pass")
 
 	if err != nil {
 		fmt.Println(err.Error())
 	}
-	fmt.Println("userId:", userId)
 }
 
 func checkInputLength(username string, password string) (err error) {
@@ -73,18 +72,18 @@ func AuthUser(username string, password string) (userId string, err error) {
 	return userId, nil
 }
 
-func CreateUser(username string, password string) (userId string, err error) {
+func CreateUser(username string, password string) (err error) {
 	// check username and password length
 	err = checkInputLength(username, password)
 
 	if err != nil {
-		return "", err
+		return err
 	}
 	// hash password
 	hashedPass, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 
 	if err != nil {
-		return "", err
+		return err
 	}
 
 	// create user
@@ -100,10 +99,8 @@ func CreateUser(username string, password string) (userId string, err error) {
 	// result := db.Select("Username", "Password").Create(&user)
 
 	if result.Error != nil {
-		return "", result.Error
+		return result.Error
 	}
 
-	// return user ID
-	userId = strconv.Itoa(int(user.ID))
-	return userId, nil
+	return nil
 }
