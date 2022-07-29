@@ -29,6 +29,8 @@ func SetupRoutes() {
 	// auth protected routes
 	auth := r.Group("/", authMiddleware)
 	auth.GET("/api/auth-hello", hello)
+	auth.POST("/api/register", createUser)
+	auth.POST("/api/create", createCommand)
 
 	r.Run(":5000")
 }
@@ -63,6 +65,14 @@ func authMiddleware(c *gin.Context) {
 	fmt.Println("User logged in")
 	fmt.Println("ID:", id)
 	// c.JSON(200, gin.H{"message": "User already logged in"})
+}
+
+func createCommand(c *gin.Context) {
+
+}
+
+func createUser(c *gin.Context) {
+
 }
 
 func login(c *gin.Context) {

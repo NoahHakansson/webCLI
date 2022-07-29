@@ -1,6 +1,7 @@
 package db
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"strconv"
@@ -37,7 +38,20 @@ func SetupDatabase() {
 	fmt.Println("userId:", userId)
 }
 
+func checkInputLength(username string, password string) (err error) {
+	if len(username) > 20 || len(password) > 50 {
+		return errors.New("Error: username or password exceeds max length")
+	}
+	return nil
+}
+
 func AuthUser(username string, password string) (userId string, err error) {
+	// check username and password length
+	err = checkInputLength(username, password)
+
+	if err != nil {
+		return "", err
+	}
 	// get user from database
 	var user User
 	result := db.Where("username = ?", username).First(&user)
@@ -60,6 +74,12 @@ func AuthUser(username string, password string) (userId string, err error) {
 }
 
 func CreateUser(username string, password string) (userId string, err error) {
+	// check username and password length
+	err = checkInputLength(username, password)
+
+	if err != nil {
+		return "", err
+	}
 	// hash password
 	hashedPass, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 
