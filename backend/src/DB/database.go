@@ -1,6 +1,7 @@
 package db
 
 import (
+	"database/sql"
 	"errors"
 	"fmt"
 	"log"
@@ -12,15 +13,30 @@ import (
 	"gorm.io/gorm"
 )
 
+// Database Models
 type User struct {
 	gorm.Model
 	Username string `gorm:"uniqueIndex"`
 	Password string
 }
 
+type Command struct {
+	gorm.Model
+	Keyword string `gorm:"uniqueIndex"`
+	Description string
+	Text string
+	Link sql.NullString
+}
+
+// constants
+const PASS_MAX_LENGTH int = 50
+const USER_MAX_LENGTH int = 20
+
+// variables
 var db *gorm.DB
 var err error
 
+// Functions
 func SetupDatabase() {
 	dsn := "host=localhost user=postgres password=postgres dbname=web_cli port=5432 sslmode=disable TimeZone=Europe/Stockholm"
 	db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
@@ -29,7 +45,13 @@ func SetupDatabase() {
 		log.Fatal(err)
 	}
 
+	// migrate database models
 	db.AutoMigrate(&User{})
+	db.AutoMigrate(&Command{})
+
+	// create some commands
+
+	// create admin account
 	err := CreateUser("admin", "pass")
 
 	if err != nil {
@@ -38,7 +60,7 @@ func SetupDatabase() {
 }
 
 func checkInputLength(username string, password string) (err error) {
-	if len(username) > 20 || len(password) > 50 {
+	if len(username) > USER_MAX_LENGTH || len(password) > PASS_MAX_LENGTH {
 		return errors.New("Error: username or password exceeds max length")
 	}
 	return nil
