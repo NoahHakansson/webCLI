@@ -40,7 +40,7 @@ func SetupDatabase() {
 		Text:        "the actual output when running the command",
 		Link:        "https://github.com/NoahHakansson",
 	}
-	err := createCommand(command)
+	err := CreateCommand(command)
 
 	if err != nil {
 		fmt.Println(err.Error())
@@ -53,7 +53,7 @@ func SetupDatabase() {
 		Text:        "the actual output when running the command",
 		Link:        "",
 	}
-	err = createCommand(command)
+	err = CreateCommand(command)
 
 	if err != nil {
 		fmt.Println(err.Error())
@@ -67,7 +67,7 @@ func SetupDatabase() {
 		fmt.Println(err.Error())
 	}
 
-	commands, err := listCommands()
+	commands, err := ListCommands()
 
 	if err != nil {
 		fmt.Println(err.Error())
@@ -111,7 +111,7 @@ func AuthUser(username string, password string) (userId string, err error) {
 }
 
 // Leave link as an empty string if no link is needed for the command.
-func createCommand(command *Command) (err error) {
+func CreateCommand(command *Command) (err error) {
 	// Disallow reserved command keyword "help"
 	if command.Keyword == "help" {
 		return errors.New(`Restricted keyword "help" is not allowed`)
@@ -131,7 +131,7 @@ func createCommand(command *Command) (err error) {
 }
 
 // returns array with all commands from database
-func listCommands() (commands []Command, err error) {
+func ListCommands() (commands []Command, err error) {
 	result := db.Find(&commands)
 
 	if result.Error != nil {

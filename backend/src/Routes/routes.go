@@ -18,6 +18,7 @@ func SetupRoutes() {
 	// routes
 	r.GET("/api/hello", hello)
 	r.POST("/api/login", login)
+	r.GET("/api/list-commands", listCommands)
 	// auth protected routes
 	auth := r.Group("/", authMiddleware)
 	auth.GET("/api/auth-hello", hello)
@@ -38,7 +39,7 @@ func authMiddleware(c *gin.Context) {
 
 	if err != nil {
 		fmt.Println("user NOT logged in")
-		fmt.Println(err)
+		fmt.Println(err.Error())
 		cookie = "NotSet"
 		c.AbortWithStatusJSON(401, gin.H{"error": "unauthorized"})
 		return
@@ -49,7 +50,7 @@ func authMiddleware(c *gin.Context) {
 	id, err := jwtauth.ValidateJWT(cookie)
 
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println(err.Error())
 		c.AbortWithStatusJSON(401, gin.H{"error": "unauthorized"})
 		return
 	}
@@ -60,7 +61,35 @@ func authMiddleware(c *gin.Context) {
 }
 
 func createCommand(c *gin.Context) {
+	var command db.Command
 
+	if err := c.ShouldBind(&command); err != nil {
+		fmt.Println(err.Error())
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	fmt.Printf("Command: %#v\n", command)
+	err := db.CreateCommand(&command)
+
+	if err != nil {
+		fmt.Println(err.Error())
+		c.JSON(401, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(200, command)
+}
+
+func listCommands(c *gin.Context) {
+	commands, err := db.ListCommands()
+
+	if err != nil {
+		fmt.Println(err.Error())
+		c.JSON(500, gin.H{"error": "Internal server error"})
+		return
+	}
+	c.JSON(200, commands)
 }
 
 func createUser(c *gin.Context) {
@@ -68,7 +97,7 @@ func createUser(c *gin.Context) {
 
 	// bind form data and return error if it fails
 	if err := c.ShouldBind(&user); err != nil {
-		fmt.Println(err)
+		fmt.Println(err.Error())
 		c.JSON(400, gin.H{"error": "Missing user credentials"})
 		return
 	}
@@ -78,12 +107,12 @@ func createUser(c *gin.Context) {
 	err := db.CreateUser(&user)
 
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println(err.Error())
 		c.JSON(401, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(200, gin.H{"message": "Success"})
+	c.JSON(200, gin.H{"username": user.Username, "creation-date": user.CreatedAt})
 }
 
 func login(c *gin.Context) {
@@ -91,7 +120,7 @@ func login(c *gin.Context) {
 
 	// bind form data and return error if it fails
 	if err := c.ShouldBind(&user); err != nil {
-		fmt.Println(err)
+		fmt.Println(err.Error())
 		c.JSON(400, gin.H{"error": "Missing user credentials"})
 		return
 	}
@@ -101,7 +130,7 @@ func login(c *gin.Context) {
 	userId, err := db.AuthUser(user.Username, user.Password)
 
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println(err.Error())
 		c.JSON(401, gin.H{"error": "Failed to authenticate user, username or password is wrong."})
 		return
 	}
@@ -110,7 +139,7 @@ func login(c *gin.Context) {
 	token, err := jwtauth.GenerateJWT(userId)
 
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println(err.Error())
 		c.JSON(500, gin.H{"error": "Internal server error"})
 		return
 	}
