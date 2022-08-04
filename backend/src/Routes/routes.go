@@ -10,14 +10,6 @@ import (
 	"github.com/NoahHakansson/webCLI/backend/src/JWTAuth"
 )
 
-var test_user string = "test"
-var test_pass string = "test"
-
-type UserCreds struct {
-	Username string `form:"username" binding:"required"`
-	Password string `form:"password" binding:"required"`
-}
-
 func SetupRoutes() {
 	db.SetupDatabase()
 	r := gin.Default()
@@ -72,7 +64,7 @@ func createCommand(c *gin.Context) {
 }
 
 func createUser(c *gin.Context) {
-	var user UserCreds
+	var user db.User
 
 	// bind form data and return error if it fails
 	if err := c.ShouldBind(&user); err != nil {
@@ -95,7 +87,7 @@ func createUser(c *gin.Context) {
 }
 
 func login(c *gin.Context) {
-	var user UserCreds
+	var user db.User
 
 	// bind form data and return error if it fails
 	if err := c.ShouldBind(&user); err != nil {

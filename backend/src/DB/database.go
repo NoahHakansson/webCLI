@@ -1,7 +1,6 @@
 package db
 
 import (
-	"database/sql"
 	"errors"
 	"fmt"
 	"log"
@@ -12,21 +11,6 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
-
-// Database Models
-type User struct {
-	gorm.Model
-	Username string `gorm:"uniqueIndex"`
-	Password string
-}
-
-type Command struct {
-	gorm.Model
-	Keyword string `gorm:"uniqueIndex"`
-	Description string
-	Text string
-	Link sql.NullString
-}
 
 // constants
 const PASS_MAX_LENGTH int = 50
@@ -50,9 +34,30 @@ func SetupDatabase() {
 	db.AutoMigrate(&Command{})
 
 	// create some commands
+	command, err := createCommand(
+		"test",
+		"some description what this command does",
+		"the actual output when running the command",
+		"https://github.com/NoahHakansson")
+
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+	fmt.Printf("Command: %#v\n", command)
+
+	command, err = createCommand(
+		"hello",
+		"some description what this command does",
+		"the actual output when running the command",
+		"")
+
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+	fmt.Printf("Command: %#v\n", command)
 
 	// create admin account
-	err := CreateUser("admin", "pass")
+	err = CreateUser("admin", "pass")
 
 	if err != nil {
 		fmt.Println(err.Error())
@@ -92,6 +97,33 @@ func AuthUser(username string, password string) (userId string, err error) {
 	// return user ID
 	userId = strconv.Itoa(int(user.ID))
 	return userId, nil
+}
+
+// Leave link as an empty string if no link is needed for the command.
+func createCommand(keyword string, description string, text string, link string) (cmd Command, err error) {
+	// Disallow reserved command keyword "help"
+	if keyword == "help" {
+		return Command{}, errors.New(`Restricted keyword "help" is not allowed`)
+	}
+
+	// create command
+	command := Command{
+		Keyword:     keyword,
+		Description: description,
+		Text:        text,
+		Link:        link,
+		Model: gorm.Model{
+			CreatedAt: time.Now(),
+		},
+	}
+
+	result := db.Create(&command)
+
+	if result.Error != nil {
+		return Command{}, result.Error
+	}
+
+	return command, nil
 }
 
 func CreateUser(username string, password string) (err error) {
