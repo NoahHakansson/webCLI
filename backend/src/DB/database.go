@@ -34,22 +34,26 @@ func SetupDatabase() {
 	db.AutoMigrate(&Command{})
 
 	// create some commands
-	command, err := createCommand(
-		"test",
-		"some description what this command does",
-		"the actual output when running the command",
-		"https://github.com/NoahHakansson")
+	command := &Command{
+		Keyword:     "test",
+		Description: "some description what this command does",
+		Text:        "the actual output when running the command",
+		Link:        "https://github.com/NoahHakansson",
+	}
+	err := createCommand(command)
 
 	if err != nil {
 		fmt.Println(err.Error())
 	}
 	fmt.Printf("Command: %#v\n", command)
 
-	command, err = createCommand(
-		"hello",
-		"some description what this command does",
-		"the actual output when running the command",
-		"")
+	command = &Command{
+		Keyword:     "hello",
+		Description: "some description what this command does",
+		Text:        "the actual output when running the command",
+		Link:        "",
+	}
+	err = createCommand(command)
 
 	if err != nil {
 		fmt.Println(err.Error())
@@ -100,30 +104,23 @@ func AuthUser(username string, password string) (userId string, err error) {
 }
 
 // Leave link as an empty string if no link is needed for the command.
-func createCommand(keyword string, description string, text string, link string) (cmd Command, err error) {
+func createCommand(command *Command) (err error) {
 	// Disallow reserved command keyword "help"
-	if keyword == "help" {
-		return Command{}, errors.New(`Restricted keyword "help" is not allowed`)
+	if command.Keyword == "help" {
+		return errors.New(`Restricted keyword "help" is not allowed`)
 	}
 
-	// create command
-	command := Command{
-		Keyword:     keyword,
-		Description: description,
-		Text:        text,
-		Link:        link,
-		Model: gorm.Model{
-			CreatedAt: time.Now(),
-		},
-	}
+	// set creation date
+	command.CreatedAt = time.Now()
 
+	// create command in database
 	result := db.Create(&command)
 
 	if result.Error != nil {
-		return Command{}, result.Error
+		return result.Error
 	}
 
-	return command, nil
+	return nil
 }
 
 func CreateUser(user *User) (err error) {
