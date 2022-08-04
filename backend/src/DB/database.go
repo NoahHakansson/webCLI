@@ -66,6 +66,13 @@ func SetupDatabase() {
 	if err != nil {
 		fmt.Println(err.Error())
 	}
+
+	commands, err := listCommands()
+
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+	fmt.Printf("\nCommands: %#v\n", commands)
 }
 
 func checkInputLength(username string, password string) (err error) {
@@ -121,6 +128,17 @@ func createCommand(command *Command) (err error) {
 	}
 
 	return nil
+}
+
+// returns array with all commands from database
+func listCommands() (commands []Command, err error) {
+	result := db.Find(&commands)
+
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return commands, nil
 }
 
 func CreateUser(user *User) (err error) {
