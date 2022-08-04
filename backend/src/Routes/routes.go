@@ -21,8 +21,8 @@ func SetupRoutes() {
 	// auth protected routes
 	auth := r.Group("/", authMiddleware)
 	auth.GET("/api/auth-hello", hello)
-	auth.POST("/api/register", createUser)
-	auth.POST("/api/create", createCommand)
+	auth.POST("/api/create-user", createUser)
+	auth.POST("/api/create-command", createCommand)
 
 	r.Run(":5000")
 }
@@ -75,7 +75,7 @@ func createUser(c *gin.Context) {
 
 	// Create user
 	fmt.Printf("User: %#v\n", user)
-	err := db.CreateUser(user.Username, user.Password)
+	err := db.CreateUser(&user)
 
 	if err != nil {
 		fmt.Println(err)

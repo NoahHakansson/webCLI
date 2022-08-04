@@ -57,7 +57,7 @@ func SetupDatabase() {
 	fmt.Printf("Command: %#v\n", command)
 
 	// create admin account
-	err = CreateUser("admin", "pass")
+	err = CreateUser(&User{Username: "admin", Password: "pass"})
 
 	if err != nil {
 		fmt.Println(err.Error())
@@ -126,31 +126,27 @@ func createCommand(keyword string, description string, text string, link string)
 	return command, nil
 }
 
-func CreateUser(username string, password string) (err error) {
+func CreateUser(user *User) (err error) {
 	// check username and password length
-	err = checkInputLength(username, password)
+	err = checkInputLength(user.Username, user.Password)
 
 	if err != nil {
 		return err
 	}
+
+	// set creation date
+	user.CreatedAt = time.Now()
+
 	// hash password
-	hashedPass, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	hashedPass, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+	user.Password = string(hashedPass)
 
 	if err != nil {
 		return err
 	}
 
-	// create user
-	user := User{
-		Username: username,
-		Password: string(hashedPass),
-		Model: gorm.Model{
-			CreatedAt: time.Now(),
-		},
-	}
-
+	// create user in database
 	result := db.Create(&user)
-	// result := db.Select("Username", "Password").Create(&user)
 
 	if result.Error != nil {
 		return result.Error
