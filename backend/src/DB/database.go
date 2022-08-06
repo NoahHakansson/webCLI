@@ -103,7 +103,7 @@ func AuthUser(username string, password string) (userId string, err error) {
 }
 
 // Leave link as an empty string if no link is needed for the command.
-func CreateCommand(command *Command) (err error) {
+func CreateCommand(command *Command) error {
 	// Disallow reserved command keyword "help"
 	if command.Keyword == "help" {
 		return errors.New(`Restricted keyword "help" is not allowed`)
@@ -131,7 +131,7 @@ func ListCommands() (commands []Command, err error) {
 	return commands, nil
 }
 
-func CreateUser(user *User) (err error) {
+func CreateUser(user *User) error {
 	// check username and password length
 	err = checkInputLength(user.Username, user.Password)
 	if err != nil {
