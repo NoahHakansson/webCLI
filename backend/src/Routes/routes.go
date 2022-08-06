@@ -67,8 +67,7 @@ func createCommand(c *gin.Context) {
 	}
 
 	fmt.Printf("Command: %#v\n", command)
-	err := db.CreateCommand(&command)
-	if err != nil {
+	if err := db.CreateCommand(&command); err != nil {
 		fmt.Println(err.Error())
 		c.JSON(401, gin.H{"error": err.Error()})
 		return
@@ -100,8 +99,7 @@ func createUser(c *gin.Context) {
 
 	// Create user
 	fmt.Printf("User: %#v\n", user)
-	err := db.CreateUser(&user)
-	if err != nil {
+	if err := db.CreateUser(&user); err != nil {
 		fmt.Println(err.Error())
 		c.JSON(401, gin.H{"error": err.Error()})
 		return
