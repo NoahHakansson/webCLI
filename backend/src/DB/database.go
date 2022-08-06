@@ -24,7 +24,6 @@ var err error
 func SetupDatabase() {
 	dsn := "host=localhost user=postgres password=postgres dbname=web_cli port=5432 sslmode=disable TimeZone=Europe/Stockholm"
 	db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
-
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -41,7 +40,6 @@ func SetupDatabase() {
 		Link:        "https://github.com/NoahHakansson",
 	}
 	err := CreateCommand(command)
-
 	if err != nil {
 		fmt.Println(err.Error())
 	}
@@ -54,7 +52,6 @@ func SetupDatabase() {
 		Link:        "",
 	}
 	err = CreateCommand(command)
-
 	if err != nil {
 		fmt.Println(err.Error())
 	}
@@ -62,13 +59,11 @@ func SetupDatabase() {
 
 	// create admin account
 	err = CreateUser(&User{Username: "admin", Password: "pass"})
-
 	if err != nil {
 		fmt.Println(err.Error())
 	}
 
 	commands, err := ListCommands()
-
 	if err != nil {
 		fmt.Println(err.Error())
 	}
@@ -85,24 +80,21 @@ func checkInputLength(username string, password string) (err error) {
 func AuthUser(username string, password string) (userId string, err error) {
 	// check username and password length
 	err = checkInputLength(username, password)
-
 	if err != nil {
 		return "", err
 	}
+
 	// get user from database
 	var user User
 	result := db.Where("username = ?", username).First(&user)
-
 	if result.Error != nil {
 		return "", result.Error
 	}
 
 	// compare password and hashedPassword
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
-
-	// return if password doesn't match
 	if err != nil {
-		return "", err
+		return "", err // return if password doesn't match
 	}
 
 	// return user ID
@@ -122,7 +114,6 @@ func CreateCommand(command *Command) (err error) {
 
 	// create command in database
 	result := db.Create(&command)
-
 	if result.Error != nil {
 		return result.Error
 	}
@@ -133,7 +124,6 @@ func CreateCommand(command *Command) (err error) {
 // returns array with all commands from database
 func ListCommands() (commands []Command, err error) {
 	result := db.Find(&commands)
-
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -144,7 +134,6 @@ func ListCommands() (commands []Command, err error) {
 func CreateUser(user *User) (err error) {
 	// check username and password length
 	err = checkInputLength(user.Username, user.Password)
-
 	if err != nil {
 		return err
 	}
@@ -154,11 +143,10 @@ func CreateUser(user *User) (err error) {
 
 	// hash password
 	hashedPass, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
-	user.Password = string(hashedPass)
-
 	if err != nil {
 		return err
 	}
+	user.Password = string(hashedPass)
 
 	// create user in database
 	result := db.Create(&user)

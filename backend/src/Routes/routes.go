@@ -36,7 +36,6 @@ func hello(c *gin.Context) {
 func authMiddleware(c *gin.Context) {
 	// check cookie for valid JWT to see if user is already logged in
 	cookie, err := c.Cookie("web_cli")
-
 	if err != nil {
 		fmt.Println("user NOT logged in")
 		fmt.Println(err.Error())
@@ -48,7 +47,6 @@ func authMiddleware(c *gin.Context) {
 	fmt.Println("Cookie:", cookie)
 
 	id, err := jwtauth.ValidateJWT(cookie)
-
 	if err != nil {
 		fmt.Println(err.Error())
 		c.AbortWithStatusJSON(401, gin.H{"error": "unauthorized"})
@@ -57,7 +55,6 @@ func authMiddleware(c *gin.Context) {
 
 	fmt.Println("User logged in")
 	fmt.Println("ID:", id)
-	// c.JSON(200, gin.H{"message": "User already logged in"})
 }
 
 func createCommand(c *gin.Context) {
@@ -71,7 +68,6 @@ func createCommand(c *gin.Context) {
 
 	fmt.Printf("Command: %#v\n", command)
 	err := db.CreateCommand(&command)
-
 	if err != nil {
 		fmt.Println(err.Error())
 		c.JSON(401, gin.H{"error": err.Error()})
@@ -83,12 +79,12 @@ func createCommand(c *gin.Context) {
 
 func listCommands(c *gin.Context) {
 	commands, err := db.ListCommands()
-
 	if err != nil {
 		fmt.Println(err.Error())
 		c.JSON(500, gin.H{"error": "Internal server error"})
 		return
 	}
+
 	c.JSON(200, commands)
 }
 
@@ -105,7 +101,6 @@ func createUser(c *gin.Context) {
 	// Create user
 	fmt.Printf("User: %#v\n", user)
 	err := db.CreateUser(&user)
-
 	if err != nil {
 		fmt.Println(err.Error())
 		c.JSON(401, gin.H{"error": err.Error()})
@@ -128,7 +123,6 @@ func login(c *gin.Context) {
 	// Try to authenticate user
 	fmt.Printf("User: %#v\n", user)
 	userId, err := db.AuthUser(user.Username, user.Password)
-
 	if err != nil {
 		fmt.Println(err.Error())
 		c.JSON(401, gin.H{"error": "Failed to authenticate user, username or password is wrong."})
@@ -137,7 +131,6 @@ func login(c *gin.Context) {
 
 	// generate a JWT for the user with user ID
 	token, err := jwtauth.GenerateJWT(userId)
-
 	if err != nil {
 		fmt.Println(err.Error())
 		c.JSON(500, gin.H{"error": "Internal server error"})
