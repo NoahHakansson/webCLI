@@ -1,3 +1,4 @@
+// Package routes provides routes
 package routes
 
 import (
@@ -10,6 +11,7 @@ import (
 	"github.com/NoahHakansson/webCLI/backend/src/JWTAuth"
 )
 
+// SetupRoutes function
 func SetupRoutes() {
 	db.SetupDatabase()
 	r := gin.Default()
@@ -120,7 +122,7 @@ func login(c *gin.Context) {
 
 	// Try to authenticate user
 	fmt.Printf("User: %#v\n", user)
-	userId, err := db.AuthUser(user.Username, user.Password)
+	userID, err := db.AuthUser(user.Username, user.Password)
 	if err != nil {
 		fmt.Println(err.Error())
 		c.JSON(401, gin.H{"error": "Failed to authenticate user, username or password is wrong."})
@@ -128,7 +130,7 @@ func login(c *gin.Context) {
 	}
 
 	// generate a JWT for the user with user ID
-	token, err := jwtauth.GenerateJWT(userId)
+	token, err := jwtauth.GenerateJWT(userID)
 	if err != nil {
 		fmt.Println(err.Error())
 		c.JSON(500, gin.H{"error": "Internal server error"})

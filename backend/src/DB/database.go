@@ -1,3 +1,4 @@
+// Package db provides db
 package db
 
 import (
@@ -13,14 +14,16 @@ import (
 )
 
 // constants
-const PASS_MAX_LENGTH int = 50
-const USER_MAX_LENGTH int = 20
+const passMaxLength int = 50
+const userMaxLength int = 20
 
 // variables
 var db *gorm.DB
 var err error
 
 // Functions
+
+// SetupDatabase function
 func SetupDatabase() {
 	dsn := "host=localhost user=postgres password=postgres dbname=web_cli port=5432 sslmode=disable TimeZone=Europe/Stockholm"
 	db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
@@ -71,13 +74,14 @@ func SetupDatabase() {
 }
 
 func checkInputLength(username string, password string) (err error) {
-	if len(username) > USER_MAX_LENGTH || len(password) > PASS_MAX_LENGTH {
+	if len(username) > userMaxLength || len(password) > passMaxLength {
 		return errors.New("Error: username or password exceeds max length")
 	}
 	return nil
 }
 
-func AuthUser(username string, password string) (userId string, err error) {
+// AuthUser function
+func AuthUser(username string, password string) (userID string, err error) {
 	// check username and password length
 	err = checkInputLength(username, password)
 	if err != nil {
@@ -98,10 +102,11 @@ func AuthUser(username string, password string) (userId string, err error) {
 	}
 
 	// return user ID
-	userId = strconv.Itoa(int(user.ID))
-	return userId, nil
+	userID = strconv.Itoa(int(user.ID))
+	return userID, nil
 }
 
+// CreateCommand function
 // Leave link as an empty string if no link is needed for the command.
 func CreateCommand(command *Command) error {
 	// Disallow reserved command keyword "help"
@@ -121,6 +126,7 @@ func CreateCommand(command *Command) error {
 	return nil
 }
 
+// ListCommands function
 // returns array with all commands from database
 func ListCommands() (commands []Command, err error) {
 	result := db.Find(&commands)
@@ -131,6 +137,7 @@ func ListCommands() (commands []Command, err error) {
 	return commands, nil
 }
 
+// CreateUser function
 func CreateUser(user *User) error {
 	// check username and password length
 	err = checkInputLength(user.Username, user.Password)

@@ -1,3 +1,4 @@
+// Package jwtauth provides jwtauth
 package jwtauth
 
 import (
@@ -9,7 +10,7 @@ import (
 )
 
 type userClaims struct {
-	Id string `json:"id"`
+	ID string `json:"id"`
 	jwt.RegisteredClaims
 }
 
@@ -31,9 +32,10 @@ var signKey = getEnv()
 
 // var signKey = []byte("supersecretkey")
 
+// GenerateJWT function
 func GenerateJWT(id string) (string, error) {
 	claims := &userClaims{
-		Id: id,
+		ID: id,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 2)),
 			Issuer:    "webCLI",
@@ -51,7 +53,7 @@ func GenerateJWT(id string) (string, error) {
 	return signedToken, nil
 }
 
-// get user ID from JWT
+// ValidateJWT get user ID from JWT
 func ValidateJWT(tokenString string) (string, error) {
 	token, err := jwt.ParseWithClaims(tokenString, &userClaims{}, func(token *jwt.Token) (interface{}, error) {
 		return []byte(signKey), nil
@@ -63,7 +65,7 @@ func ValidateJWT(tokenString string) (string, error) {
 
 	if claims, ok := token.Claims.(*userClaims); ok && token.Valid {
 		// valid token
-		return claims.Id, nil
+		return claims.ID, nil
 	}
 
 	return "", err

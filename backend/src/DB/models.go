@@ -5,12 +5,15 @@ import (
 )
 
 // Database Models
+
+// User struct
 type User struct {
 	gorm.Model
 	Username string `gorm:"uniqueIndex" form:"username" binding:"required" json:"username"`
 	Password string `form:"password" binding:"required" json:"password"`
 }
 
+// Command struct
 type Command struct {
 	gorm.Model
 	Keyword     string `gorm:"uniqueIndex" form:"keyword" binding:"required" json:"keyword"`
