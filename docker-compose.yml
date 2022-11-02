@@ -1,3 +1,4 @@
+---
 version: '3'
 
 services:
@@ -20,6 +21,9 @@ services:
       - PGADMIN_DEFAULT_PASSWORD=SuperSecret
     ports:
       - "5050:80"
+  
+  # backend
+    #TODO
 
   # frontend:
   #   image: node:16
